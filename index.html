@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Artefato — Revista do CAJOJO</title>
+<meta name="description" content="Versão digital da revista do centro acadêmico CAJOJO.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PALETA E TIPOGRAFIA — mexa só aqui pra trocar a identidade
+   ============================================================ */
+:root{
+  --roxo-profundo:#1E0B3C;   /* fundo principal */
+  --roxo:#6D28D9;            /* roxo vivo, apoio */
+  --roxo-claro:#B79CF5;      /* textos secundários sobre roxo */
+  --amarelo:#FFD21E;         /* campo e chamadas */
+  --amarelo-fundo:#F0C200;   /* amarelo um tom abaixo, pra sombra */
+  --branco:#FFFFFF;
+  --leitor-fundo:#140726;    /* fundo do leitor */
+
+  --fonte-titulo:'Stack Sans Notch', system-ui, sans-serif;
+  --fonte-texto:'Akt', system-ui, sans-serif;
+
+  --borda-tela:clamp(20px, 5vw, 72px);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--roxo-profundo);
+  color:var(--branco);
+  font-family:var(--fonte-texto);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+img{display:block}
+:focus-visible{outline:3px solid var(--amarelo);outline-offset:3px;border-radius:2px}
+
+/* ============================================================
+   CAPA DO SITE
+   ============================================================ */
+.pagina{min-height:100svh;display:grid;grid-template-rows:auto 1fr auto}
+
+.topo{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:22px var(--borda-tela);
+}
+.marca{
+  display:flex;align-items:center;
+}
+/* altura do logo: ajuste aqui */
+.marca img{height:var(--altura-logo,40px);width:auto}
+.logo-vazio{
+  font-family:var(--fonte-texto);font-size:12px;color:var(--roxo-claro);
+  border:1px dashed rgba(183,156,245,.5);border-radius:4px;padding:6px 10px;
+}
+.topo a{font-size:14px;color:var(--roxo-claro);text-decoration:none}
+.topo a:hover{color:var(--branco)}
+
+.abertura{
+  display:grid;grid-template-columns:1fr 44%;align-items:stretch;
+  position:relative;
+}
+/* o campo amarelo à direita: é a metade "impressa" da composição */
+.abertura::after{
+  content:"";position:absolute;inset:0 0 0 56%;
+  background:var(--amarelo);z-index:0;
+}
+
+.texto{
+  z-index:2;padding:clamp(24px,5vh,64px) 0 clamp(40px,8vh,80px) var(--borda-tela);
+  padding-right:clamp(24px,4vw,64px);
+  align-self:center;max-width:500ch;
+}
+.titulo{
+  font-family:var(--fonte-titulo);font-weight:800;
+  font-size:clamp(200px,7.5vw,400px);line-height:.9;letter-spacing:-.035em;
+}
+.edicao{
+  margin-top:18px;font-size:15px;color:var(--roxo-claro);
+}
+.resumo{
+  margin-top:24px;font-size:clamp(16px,1.4vw,19px);line-height:1.55;
+  color:#E4DAFB;max-width:42ch;
+}
+.botao{
+  display:inline-block;margin-top:34px;
+  background:var(--amarelo);color:var(--roxo-profundo);
+  font-family:var(--fonte-texto);font-weight:600;font-size:17px;
+  border:0;border-radius:999px;padding:16px 34px;cursor:pointer;
+  box-shadow:0 0 0 0 rgba(255,210,30,.45);
+  transition:box-shadow .25s ease, transform .25s ease;
+}
+.botao:hover{box-shadow:0 0 0 10px rgba(255,210,30,.16);transform:translateY(-1px)}
+.botao:active{transform:translateY(0)}
+
+.vitrine{
+  z-index:2;position:relative;display:flex;align-items:center;justify-content:center;
+  padding:clamp(32px,6vh,72px) var(--borda-tela);
+}
+.capa{
+  width:min(100%,420px);cursor:pointer;border:0;background:none;padding:0;
+  filter:drop-shadow(0 30px 60px rgba(30,11,60,.45));
+  transition:transform .3s ease;
+}
+.capa:hover{transform:translateY(-6px)}
+.capa img{width:100%;height:auto;border-radius:2px}
+.capa-vazia{
+  aspect-ratio:3/4;background:var(--branco);border-radius:2px;
+  display:grid;place-content:center;text-align:center;gap:8px;
+  color:#8B7BB0;font-size:14px;padding:24px;
+}
+
+.rodape{
+  padding:20px var(--borda-tela) calc(20px + env(safe-area-inset-bottom));
+  font-size:13px;color:#8875B8;display:flex;flex-wrap:wrap;gap:6px 18px;
+}
+
+@media (max-width:820px){
+  .abertura{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .abertura::after{inset:auto 0 0 0;height:var(--altura-amarelo,52%)}
+  .texto{padding-right:var(--borda-tela);max-width:none}
+  .vitrine{padding-top:clamp(28px,5vh,48px)}
+  .capa{width:min(78%,320px)}
+}
+
+/* uma única entrada orquestrada, no carregamento */
+.entra{opacity:0;transform:translateY(14px);animation:sobe .7s cubic-bezier(.2,.7,.3,1) forwards}
+.entra:nth-child(2){animation-delay:.06s}
+.entra:nth-child(3){animation-delay:.12s}
+.entra:nth-child(4){animation-delay:.18s}
+.vitrine .capa{opacity:0;animation:sobe .8s .1s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes sobe{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .entra,.vitrine .capa{animation:none;opacity:1;transform:none}
+  *{transition:none!important}
+}
+
+/* ============================================================
+   LEITOR
+   ============================================================ */
+.leitor{
+  position:fixed;inset:0;z-index:50;background:var(--leitor-fundo);
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  opacity:0;pointer-events:none;transition:opacity .28s ease;
+  --altura-palco:calc(100svh - 130px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  /* proporção de UMA página: largura ÷ altura. Suas páginas são 420x595 = 0.706 */
+  --proporcao:0.706;
+  /* altura da página com a dupla inteira na tela */
+  --altura-base:min(var(--altura-palco), calc(48vw / var(--proporcao)));
+}
+.leitor[hidden]{display:none}
+.leitor.aberto{opacity:1;pointer-events:auto}
+
+.leitor-topo{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px clamp(12px,3vw,24px);
+  padding-top:calc(14px + env(safe-area-inset-top));
+}
+.leitor-titulo{
+  font-family:var(--fonte-titulo);font-weight:700;font-size:15px;
+  letter-spacing:-.01em;color:var(--amarelo);
+}
+.ferramentas{display:flex;gap:8px}
+.icone{
+  width:40px;height:40px;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.08);color:var(--branco);
+  display:grid;place-content:center;transition:background .2s ease;
+}
+.icone:hover{background:rgba(255,255,255,.18)}
+.icone svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+.palco{
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 clamp(8px,4vw,80px);
+}
+.dupla{
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.dupla img,.dupla .falta{
+  height:var(--altura-base);
+  width:auto;background:#241340;
+}
+.dupla .falta{aspect-ratio:var(--proporcao)}
+.falta{
+  aspect-ratio:3/4;display:grid;place-content:center;text-align:center;
+  color:#9C89C7;font-size:13px;padding:20px;gap:6px;
+}
+/* lombada entre as duas páginas */
+.dupla:not(.solo)::after{
+  content:"";position:absolute;top:0;bottom:0;left:50%;width:56px;
+  transform:translateX(-50%);pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.30) 46%,rgba(0,0,0,.30) 54%,transparent);
+}
+
+/* modo ampliado */
+.palco.ampliado{overflow:auto;cursor:grab;align-items:flex-start;justify-content:flex-start;
+  padding:0;scrollbar-width:none}
+.palco.ampliado::-webkit-scrollbar{display:none}
+.palco.ampliado.arrastando{cursor:grabbing}
+.palco.ampliado .dupla{width:max-content}
+.palco.ampliado .dupla img,.palco.ampliado .dupla .falta{
+  height:calc(var(--altura-base) * var(--zoom,1.9));
+}
+
+.seta{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:52px;height:52px;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.10);color:var(--branco);
+  display:grid;place-content:center;transition:background .2s ease,opacity .2s ease;
+}
+.seta:hover{background:var(--amarelo);color:var(--roxo-profundo)}
+.seta[disabled]{opacity:.2;cursor:default;background:rgba(255,255,255,.10);color:var(--branco)}
+.seta.anterior{left:clamp(6px,1.5vw,20px)}
+.seta.proxima{right:clamp(6px,1.5vw,20px)}
+.seta svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.leitor-base{
+  padding:14px clamp(12px,3vw,24px);
+  padding-bottom:calc(14px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:16px;
+}
+.trilha{
+  flex:1;height:22px;display:flex;align-items:center;cursor:pointer;border:0;background:none;padding:0;
+}
+.trilha::before{content:"";flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.16)}
+.trilha-caixa .preenchida{
+  left:0;
+  position:absolute;height:3px;border-radius:3px;background:var(--amarelo);
+  transition:width .3s ease;
+}
+.trilha-caixa{position:relative;flex:1;display:flex;align-items:center}
+.contador{
+  font-size:13px;color:var(--roxo-claro);font-variant-numeric:tabular-nums;
+  min-width:9ch;text-align:right;
+}
+
+.aviso{
+  position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
+  background:rgba(0,0,0,.55);color:var(--branco);font-size:13px;
+  padding:9px 16px;border-radius:999px;white-space:nowrap;
+  opacity:0;transition:opacity .4s ease;pointer-events:none;
+}
+.aviso.visivel{opacity:1}
+
+@media (max-width:640px){
+  .seta{width:44px;height:44px}
+  .palco{padding:0 6px}
+}
+</style>
+</head>
+
+<body>
+
+<main class="pagina">
+  <header class="topo">
+    <!-- Coloque o logo em imagens/logo.png (ou troque o caminho abaixo).
+         Enquanto o arquivo não existir, aparece um aviso no lugar. -->
+    <span class="marca">
+      <img src="imagens/logo.png" alt="CAJOJO"
+           onerror="this.outerHTML='&lt;span class=\'logo-vazio\'&gt;imagens/logo.png&lt;/span&gt;'">
+    </span>
+    <a href="https://www.instagram.com/ca.jojo/" target="_blank" rel="noopener">Instagram</a>
+  </header>
+
+  <section class="abertura">
+    <div class="texto">
+      <h1 class="titulo entra">Artefato</h1>
+      <p class="edicao entra">1ª edição &nbsp;·&nbsp; 2026/1 &nbsp;·&nbsp; 10 páginas</p>
+      <p class="resumo entra">Um registro coletivo dos trabalhos e projetos dos alunos de Jogos Digitais, para que o que foi criado ao longo do curso não se torne um arquivo perdido no hd.</p>
+      <button class="botao entra" data-abrir>Ler a revista</button>
+    </div>
+
+    <div class="vitrine">
+      <button class="capa" data-abrir aria-label="Abrir a revista">
+        <img src="imagens/REVISTA.png" alt="Capa da revista"
+             onerror="this.outerHTML='&lt;div class=\'capa-vazia\'&gt;imagens/REVISTA.png&lt;br&gt;ainda não encontrada&lt;/div&gt;'">
+      </button>
+    </div>
+  </section>
+
+  <footer class="rodape">
+    <span>Centro Acadêmico de Jogos Digitais (CAJOJO)</span>
+  </footer>
+</main>
+
+<!-- ================= LEITOR ================= -->
+<div class="leitor" id="leitor" role="dialog" aria-modal="true" aria-label="Leitor da revista" hidden>
+  <div class="leitor-topo">
+    <span class="leitor-titulo">Artefato · 1ª edição</span>
+    <div class="ferramentas">
+      <button class="icone" id="btZoom" aria-label="Ampliar página" title="Ampliar (Z)">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>
+      </button>
+      <button class="icone" id="btTela" aria-label="Tela cheia" title="Tela cheia (F)">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+      <button class="icone" id="btFechar" aria-label="Fechar leitor" title="Fechar (Esc)">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="palco" id="palco">
+    <button class="seta anterior" id="btAnterior" aria-label="Página anterior">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="seta proxima" id="btProxima" aria-label="Próxima página">
+      <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <div class="aviso" id="aviso"></div>
+  </div>
+
+  <div class="leitor-base">
+    <div class="trilha-caixa">
+      <button class="trilha" id="trilha" aria-label="Ir para uma página"></button>
+      <div class="preenchida" id="preenchida" style="width:0"></div>
+    </div>
+    <span class="contador" id="contador"></span>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   1. AS PÁGINAS DA REVISTA
+   ------------------------------------------------------------
+   Coloque as imagens numa pasta "imagens" ao lado deste arquivo
+   e liste os nomes na ordem em que aparecem na revista.
+
+   Use sequencia() se seus arquivos forem numerados:
+     ...sequencia("imagens/pagina-", 2, 23, ".jpg")
+     gera pagina-02.jpg até pagina-23.jpg
+   ============================================================ */
+function sequencia(prefixo, de, ate, sufixo, digitos = 2){
+  const lista = [];
+  for (let i = de; i <= ate; i++) lista.push(prefixo + String(i).padStart(digitos,"0") + sufixo);
+  return lista;
+}
+
+const CONFIG = {
+  /* true  = cada imagem JÁ é uma folha dupla pronta
+     false = cada imagem é uma página avulsa e o site monta as duplas */
+  paginasJaSaoDuplas: false,
+
+  paginas: [
+    "imagens/REVISTA.png",
+    ...sequencia("imagens/REVISTA", 2, 10, ".png", 1)
+  ]
+};
+
+/* ============================================================
+   2. MONTAGEM DAS DUPLAS
+   Capa sozinha, depois 2-3, 4-5, 6-7... e a última sozinha.
+   ============================================================ */
+function montarDuplas(){
+  const p = CONFIG.paginas;
+  if (CONFIG.paginasJaSaoDuplas) return p.map((src,i)=>[{src,num:i+1}]);
+  const duplas = [[{src:p[0],num:1}]];
+  for (let i = 1; i < p.length; i += 2){
+    const par = [{src:p[i],num:i+1}];
+    if (p[i+1]) par.push({src:p[i+1],num:i+2});
+    duplas.push(par);
+  }
+  return duplas;
+}
+
+const duplas = montarDuplas();
+let atual = 0;
+let nivelZoom = 0;
+
+const leitor    = document.getElementById("leitor");
+const palco     = document.getElementById("palco");
+const contador  = document.getElementById("contador");
+const preenchida= document.getElementById("preenchida");
+const trilha    = document.getElementById("trilha");
+const btAnterior= document.getElementById("btAnterior");
+const btProxima = document.getElementById("btProxima");
+const aviso     = document.getElementById("aviso");
+
+/* ---------- desenhar uma dupla ---------- */
+function elementoPagina(pagina){
+  const img = document.createElement("img");
+  img.src = pagina.src;
+  img.alt = "Página " + pagina.num;
+  img.draggable = false;
+  img.onerror = () => {
+    const falta = document.createElement("div");
+    falta.className = "falta";
+    falta.innerHTML = "página " + pagina.num + "<br>" + pagina.src;
+    img.replaceWith(falta);
+  };
+  return img;
+}
+
+function mostrar(indice){
+  atual = Math.max(0, Math.min(duplas.length - 1, indice));
+  zerarZoom();
+
+  palco.querySelectorAll(".dupla").forEach(d => d.remove());
+  const bloco = document.createElement("div");
+  bloco.className = "dupla" + (duplas[atual].length === 1 ? " solo" : "");
+  duplas[atual].forEach(p => bloco.appendChild(elementoPagina(p)));
+  palco.appendChild(bloco);
+
+  const nums = duplas[atual].map(p => p.num);
+  contador.textContent = (nums.length === 2 ? nums[0] + "–" + nums[1] : nums[0])
+                       + " / " + CONFIG.paginas.length;
+  preenchida.style.width = ((atual + 1) / duplas.length * 100) + "%";
+  btAnterior.disabled = atual === 0;
+  btProxima.disabled  = atual === duplas.length - 1;
+
+  precarregar(atual + 1); precarregar(atual - 1);
+}
+
+function precarregar(i){
+  if (i < 0 || i >= duplas.length) return;
+  duplas[i].forEach(p => { const im = new Image(); im.src = p.src; });
+}
+
+const proxima  = () => mostrar(atual + 1);
+const anterior = () => mostrar(atual - 1);
+
+/* ---------- abrir e fechar ---------- */
+function abrir(){
+  leitor.hidden = false;
+  requestAnimationFrame(() => leitor.classList.add("aberto"));
+  document.body.style.overflow = "hidden";
+  mostrar(atual);
+  btProxima.focus();
+  if (window.innerWidth < 700) mostrarAviso("Toque duas vezes na página para ampliar");
+}
+async function fechar(){
+  if (document.fullscreenElement){
+    try { await document.exitFullscreen(); } catch(e){}
+  }
+  zerarZoom();
+  leitor.classList.remove("aberto");
+  document.body.style.overflow = "";
+  setTimeout(() => { leitor.hidden = true; }, 280);
+}
+
+document.querySelectorAll("[data-abrir]").forEach(b => b.addEventListener("click", abrir));
+document.getElementById("btFechar").addEventListener("click", fechar);
+btProxima.addEventListener("click", proxima);
+btAnterior.addEventListener("click", anterior);
+
+/* ---------- teclado ---------- */
+document.addEventListener("keydown", e => {
+  if (leitor.hidden) return;
+  if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); proxima(); }
+  else if (e.key === "ArrowLeft") anterior();
+  else if (e.key === "Home") mostrar(0);
+  else if (e.key === "End")  mostrar(duplas.length - 1);
+  else if (e.key === "Escape") { nivelZoom > 0 ? aplicarZoom(0) : fechar(); }
+  else if (e.key.toLowerCase() === "z") alternarZoom();
+  else if (e.key.toLowerCase() === "f") telaCheia();
+});
+
+/* ---------- barra de progresso ---------- */
+trilha.addEventListener("click", e => {
+  const r = trilha.getBoundingClientRect();
+  mostrar(Math.round((e.clientX - r.left) / r.width * (duplas.length - 1)));
+});
+
+/* ---------- ampliar: normal → 2x → 3.4x → normal ---------- */
+/* mude estes números para calibrar a força de cada nível */
+const NIVEIS = [1, 1.9, 3.4];
+const RECADOS = ["Visão completa", "Arraste para navegar", "Zoom máximo · arraste para navegar"];
+
+function alternarZoom(ancora){
+  aplicarZoom((nivelZoom + 1) % NIVEIS.length, ancora);
+}
+
+function aplicarZoom(nivel, ancora){
+  const bloco = palco.querySelector(".dupla");
+  if (!bloco) return;
+
+  /* onde está o ponto de interesse dentro da dupla, de 0 a 1 */
+  const pr = palco.getBoundingClientRect();
+  const r1 = bloco.getBoundingClientRect();
+  const ax = ancora ? ancora.x : pr.left + pr.width / 2;
+  const ay = ancora ? ancora.y : pr.top + pr.height / 2;
+  const fx = Math.min(1, Math.max(0, (ax - r1.left) / r1.width));
+  const fy = Math.min(1, Math.max(0, (ay - r1.top) / r1.height));
+
+  nivelZoom = nivel;
+  palco.style.setProperty("--zoom", NIVEIS[nivel]);
+  palco.classList.toggle("ampliado", nivel > 0);
+
+  if (nivel === 0){
+    palco.scrollTo(0, 0);
+  } else {
+    /* recoloca o mesmo ponto embaixo do cursor */
+    const r2 = bloco.getBoundingClientRect();
+    palco.scrollLeft += (r2.left - pr.left) + fx * r2.width  - (ax - pr.left);
+    palco.scrollTop  += (r2.top  - pr.top)  + fy * r2.height - (ay - pr.top);
+  }
+
+  const bt = document.getElementById("btZoom");
+  bt.title = bt.ariaLabel = nivel === NIVEIS.length - 1 ? "Voltar ao tamanho normal" : "Ampliar mais";
+  mostrarAviso(RECADOS[nivel]);
+}
+
+function zerarZoom(){
+  nivelZoom = 0;
+  palco.classList.remove("ampliado");
+  palco.scrollTo(0, 0);
+}
+
+document.getElementById("btZoom").addEventListener("click", () => alternarZoom());
+palco.addEventListener("dblclick", e => {
+  if (e.target.closest(".seta")) return;
+  alternarZoom({x: e.clientX, y: e.clientY});
+});
+
+/* ---------- arrastar (pan no zoom) e deslizar (virar página) ---------- */
+let px = 0, py = 0, sx = 0, sy = 0, pressionado = false, movido = 0;
+palco.addEventListener("pointerdown", e => {
+  if (e.target.closest(".seta")) return;
+  pressionado = true; movido = 0;
+  px = e.clientX; py = e.clientY;
+  sx = palco.scrollLeft; sy = palco.scrollTop;
+  if (nivelZoom > 0) palco.classList.add("arrastando");
+});
+palco.addEventListener("pointermove", e => {
+  if (!pressionado) return;
+  const dx = e.clientX - px, dy = e.clientY - py;
+  movido = Math.max(movido, Math.abs(dx));
+  if (nivelZoom > 0){
+    palco.scrollLeft = sx - dx;
+    palco.scrollTop  = sy - dy;
+  }
+});
+function soltar(e){
+  if (!pressionado) return;
+  pressionado = false;
+  palco.classList.remove("arrastando");
+  if (nivelZoom > 0) return;
+  const dx = e.clientX - px;
+  if (dx < -60) proxima();
+  else if (dx > 60) anterior();
+}
+palco.addEventListener("pointerup", soltar);
+palco.addEventListener("pointercancel", () => { pressionado = false; });
+
+/* ---------- tela cheia ---------- */
+function telaCheia(){
+  if (!document.fullscreenElement) leitor.requestFullscreen?.();
+  else document.exitFullscreen?.();
+}
+document.getElementById("btTela").addEventListener("click", telaCheia);
+
+/* ---------- aviso passageiro ---------- */
+let relogioAviso;
+function mostrarAviso(texto){
+  aviso.textContent = texto;
+  aviso.classList.add("visivel");
+  clearTimeout(relogioAviso);
+  relogioAviso = setTimeout(() => aviso.classList.remove("visivel"), 2600);
+}
+</script>
+</body>
+</html>
