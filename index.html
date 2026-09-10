@@ -261,8 +261,6 @@ img{display:block}
 
 <main class="pagina">
   <header class="topo">
-    <!-- Coloque o logo em imagens/logo.png (ou troque o caminho abaixo).
-         Enquanto o arquivo não existir, aparece um aviso no lugar. -->
     <span class="marca">
       <img src="imagens/logo.png" alt="CAJOJO"
            onerror="this.outerHTML='&lt;span class=\'logo-vazio\'&gt;imagens/logo.png&lt;/span&gt;'">
@@ -330,13 +328,6 @@ img{display:block}
 <script>
 /* ============================================================
    1. AS PÁGINAS DA REVISTA
-   ------------------------------------------------------------
-   Coloque as imagens numa pasta "imagens" ao lado deste arquivo
-   e liste os nomes na ordem em que aparecem na revista.
-
-   Use sequencia() se seus arquivos forem numerados:
-     ...sequencia("imagens/pagina-", 2, 23, ".jpg")
-     gera pagina-02.jpg até pagina-23.jpg
    ============================================================ */
 function sequencia(prefixo, de, ate, sufixo, digitos = 2){
   const lista = [];
@@ -356,8 +347,7 @@ const CONFIG = {
 };
 
 /* ============================================================
-   2. MONTAGEM DAS DUPLAS
-   Capa sozinha, depois 2-3, 4-5, 6-7... e a última sozinha.
+   2. MONTAGEM
    ============================================================ */
 function montarDuplas(){
   const p = CONFIG.paginas;
@@ -384,7 +374,6 @@ const btAnterior= document.getElementById("btAnterior");
 const btProxima = document.getElementById("btProxima");
 const aviso     = document.getElementById("aviso");
 
-/* ---------- desenhar uma dupla ---------- */
 function elementoPagina(pagina){
   const img = document.createElement("img");
   img.src = pagina.src;
@@ -469,8 +458,7 @@ trilha.addEventListener("click", e => {
   mostrar(Math.round((e.clientX - r.left) / r.width * (duplas.length - 1)));
 });
 
-/* ---------- ampliar: normal → 2x → 3.4x → normal ---------- */
-/* mude estes números para calibrar a força de cada nível */
+/* ---------- ampliar ---------- */
 const NIVEIS = [1, 1.9, 3.4];
 const RECADOS = ["Visão completa", "Arraste para navegar", "Zoom máximo · arraste para navegar"];
 
@@ -482,7 +470,6 @@ function aplicarZoom(nivel, ancora){
   const bloco = palco.querySelector(".dupla");
   if (!bloco) return;
 
-  /* onde está o ponto de interesse dentro da dupla, de 0 a 1 */
   const pr = palco.getBoundingClientRect();
   const r1 = bloco.getBoundingClientRect();
   const ax = ancora ? ancora.x : pr.left + pr.width / 2;
@@ -497,7 +484,6 @@ function aplicarZoom(nivel, ancora){
   if (nivel === 0){
     palco.scrollTo(0, 0);
   } else {
-    /* recoloca o mesmo ponto embaixo do cursor */
     const r2 = bloco.getBoundingClientRect();
     palco.scrollLeft += (r2.left - pr.left) + fx * r2.width  - (ax - pr.left);
     palco.scrollTop  += (r2.top  - pr.top)  + fy * r2.height - (ay - pr.top);
@@ -520,7 +506,6 @@ palco.addEventListener("dblclick", e => {
   alternarZoom({x: e.clientX, y: e.clientY});
 });
 
-/* ---------- arrastar (pan no zoom) e deslizar (virar página) ---------- */
 let px = 0, py = 0, sx = 0, sy = 0, pressionado = false, movido = 0;
 palco.addEventListener("pointerdown", e => {
   if (e.target.closest(".seta")) return;
@@ -556,8 +541,6 @@ function telaCheia(){
   else document.exitFullscreen?.();
 }
 document.getElementById("btTela").addEventListener("click", telaCheia);
-
-/* ---------- aviso passageiro ---------- */
 let relogioAviso;
 function mostrarAviso(texto){
   aviso.textContent = texto;
